@@ -73,14 +73,6 @@
 %% Initialize the callback module s state.
 -callback init(brod:group_id(), term()) -> {ok, cb_state()}.
 
-%% Handle a message.
--callback handle_message(brod:topic(),
-                         brod:partition(),
-                         brod:message() | brod:message_set(),
-                         cb_state()) -> {ok, cb_state()} |
-                                        {ok, ack, cb_state()} |
-                                        {ok, ack_no_commit, cb_state()}.
-
 %% @doc Handle a message. Return one of:
 %%
 %% `{ok, NewCallbackState}':
@@ -98,15 +90,14 @@
 %% While this callback function is being evaluated, the fetch-ahead
 %% partition-consumers are fetching more messages behind the scene
 %% unless prefetch_count and prefetch_bytes are set to 0 in consumer config.
+%% @end
 %%
--spec handle_message(brod:topic(),
-                     brod:partition(),
-                     brod:message() | brod:message_set(),
-                     cb_state()) -> {ok, cb_state()} |
-                                    {ok, ack, cb_state()} |
-                                    {ok, ack_no_commit, cb_state()}.
-handle_message(_Topic, _Partition, _MessageSet, State) ->
-  {ok, ack, State}.
+-callback handle_message(brod:topic(),
+                         brod:partition(),
+                         brod:message() | brod:message_set(),
+                         cb_state()) -> {ok, cb_state()} |
+                                        {ok, ack, cb_state()} |
+                                        {ok, ack_no_commit, cb_state()}.
 
 %% This callback is called only when subscriber is to commit offsets locally
 %% instead of kafka.
